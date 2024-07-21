@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>טלפרומפטר עברית - מצב לילה</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;800&display=swap');
+        
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Assistant', sans-serif;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            overflow: hidden;
+        }
+        #editor {
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+        }
+        #editorContent {
+            width: 100%;
+            max-width: 800px;
+            background-color: #2c2c2c;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        #editorContent:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+        }
+        #textInput {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 20px;
+            font-family: 'Assistant', sans-serif;
+            font-weight: 400;
+            font-size: 16px;
+            border: 2px solid #444;
+            border-radius: 10px;
+            padding: 10px;
+            transition: all 0.3s ease;
+            background-color: #333;
+            color: #e0e0e0;
+        }
+        #textInput:focus {
+            border-color: #4a90e2;
+            box-shadow: 0 0 10px rgba(74, 144, 226, 0.3);
+        }
+        #fileInput, #colorControls, #saveLoadControls {
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            font-family: 'Assistant', sans-serif;
+            font-weight: 800;
+            margin-right: 10px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #4a90e2;
+            color: white;
+        }
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        #startButton {
+            background-color: #2ecc71;
+        }
+        #colorControls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #colorControls label {
+            margin-right: 10px;
+        }
+        input[type="color"] {
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            margin-right: 20px;
+            background-color: #333;
+        }
+        #prompter {
+            display: none;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+        #prompterText {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            font-family: 'Assistant', sans-serif;
+            font-weight: 800;
+            font-size: 48px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+        #speedIndicator, #fontSizeIndicator {
+            position: fixed;
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.5);
+            font-family: 'Assistant', sans-serif;
+            font-weight: 800;
+        }
+        #speedIndicator {
+            top: 10px;
+            left: 10px;
+        }
+        #fontSizeIndicator {
+            top: 10px;
+            right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="editor">
+        <div id="editorContent">
+            <h1 style="text-align: center; color: #4a90e2;">טלפרומפטר מגניב 😎</h1>
+            <textarea id="textInput" dir="rtl" placeholder="הכנס טקסט כאן או טען קובץ"></textarea>
+            <div id="fileInput">
+                <button onclick="document.getElementById('fileInputElement').click()">בחר קובץ</button>
+                <input type="file" id="fileInputElement" accept=".txt,.doc,.docx,.ppt,.pdf" style="display: none;">
+            </div>
+            <div id="colorControls">
+                <label for="textColor">צבע טקסט:</label>
+                <input type="color" id="textColor" value="#ffffff">
+                <label for="backgroundColor">צבע רקע:</label>
+                <input type="color" id="backgroundColor" value="#000000">
+            </div>
+            <div id="saveLoadControls">
+                <button id="saveButton">שמור טקסט</button>
+                <button id="loadButton">טען טקסט</button>
+            </div>
+            <button id="startButton">הצג</button>
+        </div>
+    </div>
+    <div id="prompter">
+        <div id="prompterText"></div>
+        <div id="speedIndicator">1</div>
+        <div id="fontSizeIndicator">48px</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let scrollSpeed = 1;
+            let scrollInterval;
+            let fontSize = 48;
+            let currentPosition = 0;
+            let initialPosition = 0;
+            const editor = document.getElementById('editor');
+            const prompter = document.getElementById('prompter');
+            const textInput = document.getElementById('textInput');
+            const fileInput = document.getElementById('fileInputElement');
+            const startButton = document.getElementById('startButton');
+            const prompterText = document.getElementById('prompterText');
+            const speedIndicator = document.getElementById('speedIndicator');
+            const fontSizeIndicator = document.getElementById('fontSizeIndicator');
+            const textColorInput = document.getElementById('textColor');
+            const backgroundColorInput = document.getElementById('backgroundColor');
+            const saveButton = document.getElementById('saveButton');
+            const loadButton = document.getElementById('loadButton');
+
+            startButton.addEventListener('click', startPrompter);
+            fileInput.addEventListener('change', handleFileUpload);
+            textColorInput.addEventListener('change', updateColors);
+            backgroundColorInput.addEventListener('change', updateColors);
+            saveButton.addEventListener('click', saveText);
+            loadButton.addEventListener('click', loadText);
+            textInput.addEventListener('input', autoSaveText);
+
+            // Load saved text on page load
+            const savedText = localStorage.getItem('teleprompterText');
+            if (savedText) {
+                textInput.value = savedText;
+            }
+
+            function startPrompter() {
+                editor.style.display = 'none';
+                prompter.style.display = 'block';
+                prompterText.textContent = textInput.value;
+                adjustFontSize(true);
+                window.addEventListener('keydown', handleKeyPress);
+                prompter.addEventListener('click', stopPrompter);
+                scrollSpeed = 1;
+                updateSpeedIndicator();
+                updateColors();
+                updateScrolling();
+                initialPosition = currentPosition;
+            }
+
+            function stopPrompter() {
+                editor.style.display = 'flex';
+                prompter.style.display = 'none';
+                scrollSpeed = 1;
+                currentPosition = 0;
+                updateSpeedIndicator();
+                clearInterval(scrollInterval);
+                window.removeEventListener('keydown', handleKeyPress);
+                prompter.removeEventListener('click', stopPrompter);
+            }
+
+            function handleKeyPress(e) {
+                switch(e.key.toLowerCase()) {
+                    case 'pageup':
+                        scrollSpeed = Math.max(-9, scrollSpeed - 1);
+                        break;
+                    case 'pagedown':
+                        scrollSpeed = Math.min(9, scrollSpeed + 1);
+                        break;
+                    case 's':
+                        scrollSpeed = 0;
+                        break;
+                    case '[':
+                        fontSize = Math.max(12, fontSize - 2);
+                        adjustFontSize();
+                        break;
+                    case ']':
+                        fontSize = Math.min(96, fontSize + 2);
+                        adjustFontSize();
+                        break;
+                    case 'b':
+                        resetToStart();
+                        break;
+                }
+                updateSpeedIndicator();
+                updateScrolling();
+            }
+
+            function resetToStart() {
+                scrollSpeed = 0;
+                currentPosition = initialPosition;
+                prompterText.style.transform = `translateY(${currentPosition}px)`;
+                updateSpeedIndicator();
+                updateScrolling();
+            }
+
+            function updateSpeedIndicator() {
+                speedIndicator.textContent = scrollSpeed;
+            }
+
+            function updateScrolling() {
+                clearInterval(scrollInterval);
+                if (scrollSpeed !== 0) {
+                    scrollInterval = setInterval(() => {
+                        currentPosition -= scrollSpeed;
+                        // Prevent the text from moving below the initial position
+                        currentPosition = Math.min(currentPosition, initialPosition);
+                        prompterText.style.transform = `translateY(${currentPosition}px)`;
+                    }, 16);
+                }
+            }
+
+            function adjustFontSize(isInitial = false) {
+                const oldHeight = prompterText.clientHeight;
+                prompterText.style.fontSize = `${fontSize}px`;
+                fontSizeIndicator.textContent = `${fontSize}px`;
+                
+                if (isInitial) {
+                    resetPosition();
+                } else {
+                    const newHeight = prompterText.clientHeight;
+                    const scaleFactor = newHeight / oldHeight;
+                    currentPosition *= scaleFactor;
+                    initialPosition *= scaleFactor;
+                    prompterText.style.transform = `translateY(${currentPosition}px)`;
+                }
+            }
+
+            function resetPosition() {
+                const prompterHeight = prompter.clientHeight;
+                const textHeight = prompterText.clientHeight;
+                currentPosition = prompterHeight;
+                initialPosition = currentPosition;
+                prompterText.style.transform = `translateY(${currentPosition}px)`;
+            }
+
+            function updateColors() {
+                prompterText.style.color = textColorInput.value;
+                prompter.style.backgroundColor = backgroundColorInput.value;
+            }
+
+            function saveText() {
+                const text = textInput.value;
+                const blob = new Blob([text], {type: "text/plain;charset=utf-8"});
+                const a = document.createElement("a");
+                a.href = URL.createObjectURL(blob);
+                a.download = "teleprompter_text.txt";
+                a.click();
+            }
+
+            function loadText() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.txt';
+                input.onchange = e => {
+                    const file = e.target.files[0];
+                    const reader = new FileReader();
+                    reader.onload = readerEvent => {
+                        textInput.value = readerEvent.target.result;
+                        autoSaveText();
+                    }
+                    reader.readAsText(file);
+                }
+                input.click();
+            }
+
+            function autoSaveText() {
+                localStorage.setItem('teleprompterText', textInput.value);
+            }
+
+            async function handleFileUpload(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const extension = file.name.split('.').pop().toLowerCase();
+                let text = '';
+
+                switch (extension) {
+                    case 'txt':
+                        text = await readTextFile(file);
+                        break;
+                    case 'pdf':
+                        text = await readPDFFile(file);
+                        break;
+                    case 'doc':
+                    case 'docx':
+                    case 'ppt':
+                        alert('קבצי Word ו-PowerPoint אינם נתמכים ישירות. אנא המר אותם ל-PDF או העתק את התוכן לתיבת הטקסט.');
+                        return;
+                }
+
+                textInput.value = text;
+                autoSaveText();
+            }
+
+            function readTextFile(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = (e) => reject(e);
+                    reader.readAsText(file);
+                });
+            }
+
+            async function readPDFFile(file) {
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+                let text = '';
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const content = await page.getTextContent();
+                    text += content.items.map(item => item.str).join(' ') + '\n';
+                }
+                return text;
+            }
+
+            // Initialize PDF.js
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.worker.min.js';
+        });
+    </script>
+</body>
+</html>
