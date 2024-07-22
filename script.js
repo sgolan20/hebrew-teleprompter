@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentPosition = 0;
     let initialPosition = 0;
     let startY = 0;
-    let initialPinchDistance = null;
+    let startY2 = 0; // משתנה נוסף לאחסון מיקום האצבע השנייה
     const sensitivity = 20; // Adjust this value to control the sensitivity
     const editor = document.getElementById('editor');
     const prompter = document.getElementById('prompter');
@@ -228,7 +228,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.touches.length === 1) {
             startY = e.touches[0].clientY;
         } else if (e.touches.length === 2) {
-            initialPinchDistance = getPinchDistance(e.touches);
+            startY = e.touches[0].clientY;
+            startY2 = e.touches[1].clientY;
         }
     }
 
@@ -252,20 +253,22 @@ document.addEventListener('DOMContentLoaded', function() {
             updateSpeedIndicator();
             updateScrolling();
         } else if (e.touches.length === 2) {
-            const currentPinchDistance = getPinchDistance(e.touches);
-            if (initialPinchDistance) {
-                const pinchDelta = initialPinchDistance - currentPinchDistance;
-                if (Math.abs(pinchDelta) > sensitivity) {
-                    if (pinchDelta > 0) {
-                        // Pinching - decrease font size
-                        fontSize = Math.max(12, fontSize - 2);
-                    } else if (pinchDelta < 0) {
-                        // Spreading - increase font size
-                        fontSize = Math.min(96, fontSize + 2);
-                    }
-                    initialPinchDistance = currentPinchDistance; // Reset initialPinchDistance for continuous adjustment
-                    adjustFontSize();
+            const currentY1 = e.touches[0].clientY;
+            const currentY2 = e.touches[1].clientY;
+            const deltaY1 = startY - currentY1;
+            const deltaY2 = startY2 - currentY2;
+
+            if (Math.abs(deltaY1) > sensitivity && Math.abs(deltaY2) > sensitivity) {
+                if (deltaY1 < 0 && deltaY2 < 0) {
+                    // Both fingers moving down - decrease font size
+                    fontSize = Math.max(12, fontSize - 2);
+                } else if (deltaY1 > 0 && deltaY2 > 0) {
+                    // Both fingers moving up - increase font size
+                    fontSize = Math.min(96, fontSize + 2);
                 }
+                startY = currentY1; // Reset startY to the new currentY for continuous adjustment
+                startY2 = currentY2; // Reset startY2 to the new currentY2 for continuous adjustment
+                adjustFontSize();
             }
         }
     }
@@ -273,13 +276,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function handleTouchEnd(e) {
         e.preventDefault(); // Prevent default touch behavior
         if (e.touches.length < 2) {
-            initialPinchDistance = null;
+            startY2 = 0;
         }
-    }
-
-    function getPinchDistance(touches) {
-        const dx = touches[0].clientX - touches[1].clientX;
-        const dy = touches[0].clientY - touches[1].clientY;
-        return Math.sqrt(dx * dx + dy * dy);
     }
 });
