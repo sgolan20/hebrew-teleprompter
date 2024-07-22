@@ -224,6 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.worker.min.js';
 
     function handleTouchStart(e) {
+        e.preventDefault(); // Prevent default touch behavior
         if (e.touches.length === 1) {
             startY = e.touches[0].clientY;
         } else if (e.touches.length === 2) {
@@ -232,6 +233,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function handleTouchMove(e) {
+        e.preventDefault(); // Prevent default touch behavior
         if (e.touches.length === 1) {
             const currentY = e.touches[0].clientY;
             const deltaY = startY - currentY;
@@ -269,6 +271,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function handleTouchEnd(e) {
+        e.preventDefault(); // Prevent default touch behavior
         if (e.touches.length < 2) {
             initialPinchDistance = null;
         }
