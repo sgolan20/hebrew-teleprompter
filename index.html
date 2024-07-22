@@ -34,7 +34,18 @@
                     <span id="saveIndicator">נשמר!</span>
                 </div>
             </div>
-            <button id="startButton">הצג</button>
+            <!-- Remove the existing start button -->
+<!-- <button id="startButton">הצג</button> -->
+
+<!-- Add the floating button outside of editorContent -->
+<div id="floatingButton">
+    <button id="startButton">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-play">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+    </button>
+</div>
+
         </div>
     </div>
     <div id="prompter">
