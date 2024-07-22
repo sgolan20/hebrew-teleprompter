@@ -421,10 +421,10 @@
             function handleKeyPress(e) {
                 switch(e.key.toLowerCase()) {
                     case 'pageup':
-                        scrollSpeed = Math.max(-9, scrollSpeed - 1);
+                        decreaseSpeed();
                         break;
                     case 'pagedown':
-                        scrollSpeed = Math.min(9, scrollSpeed + 1);
+                        increaseSpeed();
                         break;
                     case 's':
                         scrollSpeed = 0;
@@ -443,6 +443,22 @@
                 }
                 updateSpeedIndicator();
                 updateScrolling();
+            }
+
+            function increaseSpeed() {
+                const speeds = [0, 0.25, 0.5, 0.75, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+                const currentIndex = speeds.indexOf(scrollSpeed);
+                if (currentIndex < speeds.length - 1) {
+                    scrollSpeed = speeds[currentIndex + 1];
+                }
+            }
+
+            function decreaseSpeed() {
+                const speeds = [0, 0.25, 0.5, 0.75, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+                const currentIndex = speeds.indexOf(scrollSpeed);
+                if (currentIndex > 0) {
+                    scrollSpeed = speeds[currentIndex - 1];
+                }
             }
 
             function resetToStart() {
@@ -596,12 +612,33 @@
 
                     if (Math.abs(deltaY) > sensitivity) {
                         if (deltaY > 0) {
-                            scrollSpeed = Math.min(9, scrollSpeed + 1);
+                            increaseSpeed();
                         } else if (deltaY < 0) {
-                            scrollSpeed = Math.max(-9, scrollSpeed - 1);
+                            decreaseSpeed();
                         }
                         startY = currentY;
                     }
+
+                    updateSpeedIndicator();
+                    updateScrolling();
+                } else if (e.touches.length === 2) {
+                    const currentY1 = e.touches[0].clientY;
+                    const currentY2 = e.touches[1].clientY;
+                    const deltaY1 = startY - currentY1;
+                    const deltaY2 = startY2 - currentY2;
+
+                    if (Math.abs(deltaY1) > sensitivity && Math.abs(deltaY2) > sensitivity) {
+                        if (deltaY1 < 0 && deltaY2 < 0) {
+                            fontSize = Math.max(12, fontSize - 2);
+                        } else if (deltaY1 > 0 && deltaY2 > 0) {
+                            fontSize = Math.min(96, fontSize + 2);
+                        }
+                        startY = currentY1;
+                        startY2 = currentY2;
+                        adjustFontSize();
+                    }
+                }
+            }
 
                     updateSpeedIndicator();
                     updateScrolling();
