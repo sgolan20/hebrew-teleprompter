@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const clearStorageButton = document.getElementById('clearStorageButton');
     const saveIndicator = document.getElementById('saveIndicator');
     const instructionsButton = document.getElementById('instructionsButton');
+    const exitButton = document.getElementById('exitButton');
 
     let saveTimeout;
 
@@ -39,13 +40,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         fontSizeInput.addEventListener('input', updateFontSize);
         clearStorageButton.addEventListener('click', clearLocalStorage);
-        prompter.addEventListener('touchstart', handleTouchStart);
-        prompter.addEventListener('touchmove', handleTouchMove);
-        prompter.addEventListener('touchend', handleTouchEnd);
-        
         instructionsButton.addEventListener('click', () => {
             window.location.href = 'instructions-page.html';
         });
+        exitButton.addEventListener('click', stopPrompter);
+        prompter.addEventListener('touchstart', handleTouchStart);
+        prompter.addEventListener('touchmove', handleTouchMove);
 
         const savedText = localStorage.getItem('teleprompterText');
         if (savedText) {
@@ -57,7 +57,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const elements = {
         editor, prompter, textInput, fileInput, startButton, prompterText,
         speedIndicator, fontSizeIndicator, textColorInput, backgroundColorInput,
-        saveButton, loadButton, fontSizeInput, clearStorageButton, saveIndicator, instructionsButton
+        saveButton, loadButton, fontSizeInput, clearStorageButton, saveIndicator,
+        instructionsButton, exitButton
     };
 
     let allElementsExist = true;
@@ -75,40 +76,36 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function startPrompter() {
-    document.getElementById('floatingButton').style.display = 'none';
-    editor.style.display = 'none';
-    prompter.style.display = 'block';
-    prompterText.textContent = textInput.value;
-    fontSize = parseInt(fontSizeInput.value, 10);
-    adjustFontSize(true);
-    window.addEventListener('keydown', handleKeyPress);
-    prompter.addEventListener('click', stopPrompter);
-    prompter.addEventListener('touchend', handleTouchEnd); // הוסף את זה
-    scrollSpeed = 1;
-    updateSpeedIndicator();
-    updateColors();
-    updateScrolling();
-    initialPosition = currentPosition;
-    if (window.innerWidth <= 768) {
-        document.documentElement.requestFullscreen().catch(err => console.log(err));
+        document.getElementById('floatingButton').style.display = 'none';
+        editor.style.display = 'none';
+        prompter.style.display = 'block';
+        prompterText.textContent = textInput.value;
+        fontSize = parseInt(fontSizeInput.value, 10);
+        adjustFontSize(true);
+        window.addEventListener('keydown', handleKeyPress);
+        scrollSpeed = 1;
+        updateSpeedIndicator();
+        updateColors();
+        updateScrolling();
+        initialPosition = currentPosition;
+        if (window.innerWidth <= 768) {
+            document.documentElement.requestFullscreen().catch(err => console.log(err));
+        }
     }
-}
 
     function stopPrompter() {
-    document.getElementById('floatingButton').style.display = 'block';
-    editor.style.display = 'flex';
-    prompter.style.display = 'none';
-    scrollSpeed = 1;
-    currentPosition = 0;
-    updateSpeedIndicator();
-    clearInterval(scrollInterval);
-    window.removeEventListener('keydown', handleKeyPress);
-    prompter.removeEventListener('click', stopPrompter);
-    prompter.removeEventListener('touchend', handleTouchEnd); // הוסף את זה
-    if (document.fullscreenElement) {
-        document.exitFullscreen().catch(err => console.log(err));
+        document.getElementById('floatingButton').style.display = 'block';
+        editor.style.display = 'flex';
+        prompter.style.display = 'none';
+        scrollSpeed = 1;
+        currentPosition = 0;
+        updateSpeedIndicator();
+        clearInterval(scrollInterval);
+        window.removeEventListener('keydown', handleKeyPress);
+        if (document.fullscreenElement) {
+            document.exitFullscreen().catch(err => console.log(err));
+        }
     }
-}
 
     function handleKeyPress(e) {
         switch(e.key.toLowerCase()) {
@@ -137,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateScrolling();
     }
 
-    function resetToStart() {
+function resetToStart() {
         scrollSpeed = 0;
         currentPosition = initialPosition;
         prompterText.style.transform = `translateY(${currentPosition}px)`;
@@ -271,7 +268,6 @@ document.addEventListener('DOMContentLoaded', function() {
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.worker.min.js';
 
     function handleTouchStart(e) {
-        e.preventDefault();
         if (e.touches.length === 1) {
             startY = e.touches[0].clientY;
         } else if (e.touches.length === 2) {
@@ -281,7 +277,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function handleTouchMove(e) {
-        e.preventDefault();
         if (e.touches.length === 1) {
             const currentY = e.touches[0].clientY;
             const deltaY = startY - currentY;
@@ -315,16 +310,4 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-
-    function handleTouchEnd(e) {
-    if (e.touches.length < 2) {
-        startY2 = 0;
-        if (e.changedTouches.length === 1) {
-            const endY = e.changedTouches[0].clientY;
-            if (Math.abs(startY - endY) < 10) { // אם היתה תזוזה קטנה מאוד, נחשיב זאת כלחיצה
-                stopPrompter();
-            }
-        }
-    }
-}
-});
+});                          
