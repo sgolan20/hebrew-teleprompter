@@ -75,13 +75,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function startPrompter() {
+        document.getElementById('floatingButton').style.display = 'none';
         editor.style.display = 'none';
         prompter.style.display = 'block';
         prompterText.textContent = textInput.value;
         fontSize = parseInt(fontSizeInput.value, 10);
         adjustFontSize(true);
         window.addEventListener('keydown', handleKeyPress);
-        prompter.addEventListener('click', stopPrompter); // הוספת מאזין ללחיצה על המסך במצב תצוגה
+        prompter.addEventListener('click', stopPrompter);
         scrollSpeed = 1;
         updateSpeedIndicator();
         updateColors();
@@ -93,6 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function stopPrompter() {
+        document.getElementById('floatingButton').style.display = 'block';
         editor.style.display = 'flex';
         prompter.style.display = 'none';
         scrollSpeed = 1;
