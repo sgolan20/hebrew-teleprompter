@@ -262,36 +262,44 @@
 </head>
 <body>
     <div id="editor">
-        <div id="editorContent">
-            <h1 id="title">טלפרומפטר מגניב 😎</h1>
-            <textarea id="textInput" placeholder="הכנס טקסט כאן או טען קובץ"></textarea>
-            <div id="controls">
-                <div id="fileInput">
-                    <label for="fileInputElement" class="button">טען טקסט</label>
-                    <input type="file" id="fileInputElement" accept=".txt,.pdf" style="display: none;">
-                </div>
-                <div id="textSizeControls">
-                    <label for="fontSizeInput">גודל טקסט:</label>
-                    <input type="number" id="fontSizeInput" min="12" max="96" value="48">
-                </div>
-                <div id="colorControls">
-                    <label for="textColor">צבע טקסט:</label>
-                    <input type="color" id="textColor" value="#ffffff">
-                    <label for="backgroundColor">צבע רקע:</label>
-                    <input type="color" id="backgroundColor" value="#000000">
-                </div>
-                <div id="saveLoadControls">
-                    <button id="saveButton">שמור טקסט</button>
-                    <button id="loadButton">טען טקסט</button>
-                    <button id="clearStorageButton">מחק טקסט שמור</button>
-                    <button id="instructionsButton">הוראות שימוש</button>
-                </div>
+    <div id="editorContent">
+        <h1 id="title">טלפרומפטר מגניב 😎</h1>
+        <textarea id="textInput" placeholder="הכנס טקסט כאן או טען קובץ"></textarea>
+        <div id="controls">
+            <div class="control-item" title="טען טקסט">
+                <label for="fileInputElement" class="icon-button">
+                    <i class="fas fa-file-upload"></i>
+                </label>
+                <input type="file" id="fileInputElement" accept=".txt,.pdf" style="display: none;">
+                <span>טען</span>
             </div>
-            <div id="saveControls">
-                <span id="saveIndicator">נשמר!</span>
+            <div class="control-item" title="גודל טקסט">
+                <input type="number" id="fontSizeInput" min="12" max="96" value="48">
+                <span>גודל</span>
+            </div>
+            <div class="control-item" title="צבע טקסט">
+                <input type="color" id="textColor" value="#ffffff">
+                <span>צבע טקסט</span>
+            </div>
+            <div class="control-item" title="צבע רקע">
+                <input type="color" id="backgroundColor" value="#000000">
+                <span>צבע רקע</span>
+            </div>
+            <div class="control-item" title="שמור טקסט">
+                <button id="saveButton" class="icon-button"><i class="fas fa-save"></i></button>
+                <span>שמור</span>
+            </div>
+            <div class="control-item" title="מחק טקסט שמור">
+                <button id="clearStorageButton" class="icon-button"><i class="fas fa-trash"></i></button>
+                <span>מחק</span>
+            </div>
+            <div class="control-item" title="הוראות שימוש">
+                <button id="instructionsButton" class="icon-button"><i class="fas fa-question-circle"></i></button>
+                <span>עזרה</span>
             </div>
         </div>
     </div>
+</div>
 
     <div id="prompter">
         <div id="prompterText"></div>
