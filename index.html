@@ -446,20 +446,20 @@
             }
 
             function increaseSpeed() {
-                const speeds = [0, 0.25, 0.5, 0.75, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-                const currentIndex = speeds.indexOf(scrollSpeed);
-                if (currentIndex < speeds.length - 1) {
-                    scrollSpeed = speeds[currentIndex + 1];
-                }
-            }
+    const speeds = [-9, -8, -7, -6, -5, -4, -3, -2, -1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    const currentIndex = speeds.indexOf(scrollSpeed);
+    if (currentIndex < speeds.length - 1) {
+        scrollSpeed = speeds[currentIndex + 1];
+    }
+}
 
-            function decreaseSpeed() {
-                const speeds = [0, 0.25, 0.5, 0.75, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-                const currentIndex = speeds.indexOf(scrollSpeed);
-                if (currentIndex > 0) {
-                    scrollSpeed = speeds[currentIndex - 1];
-                }
-            }
+function decreaseSpeed() {
+    const speeds = [-9, -8, -7, -6, -5, -4, -3, -2, -1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    const currentIndex = speeds.indexOf(scrollSpeed);
+    if (currentIndex > 0) {
+        scrollSpeed = speeds[currentIndex - 1];
+    }
+}
 
             function resetToStart() {
                 scrollSpeed = 0;
@@ -474,15 +474,20 @@
             }
 
             function updateScrolling() {
-                clearInterval(scrollInterval);
-                if (scrollSpeed !== 0) {
-                    scrollInterval = setInterval(() => {
-                        currentPosition -= scrollSpeed;
-                        currentPosition = Math.min(currentPosition, initialPosition);
-                        prompterText.style.transform = `translateY(${currentPosition}px)`;
-                    }, 16);
-                }
+    clearInterval(scrollInterval);
+    if (scrollSpeed !== 0) {
+        scrollInterval = setInterval(() => {
+            currentPosition -= scrollSpeed;
+            if (scrollSpeed > 0) {
+                currentPosition = Math.min(currentPosition, initialPosition);
+            } else {
+                currentPosition = Math.max(currentPosition, initialPosition - prompterText.clientHeight);
             }
+            prompterText.style.transform = `translateY(${currentPosition}px)`;
+        }, 16);
+    }
+}
+            
 
             function adjustFontSize(isInitial = false) {
                 const oldHeight = prompterText.clientHeight;
