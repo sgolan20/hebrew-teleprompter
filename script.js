@@ -25,25 +25,48 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let saveTimeout;
 
-    startButton.addEventListener('click', startPrompter);
-    fileInput.addEventListener('change', handleFileUpload);
-    textColorInput.addEventListener('change', updateColors);
-    backgroundColorInput.addEventListener('change', updateColors);
-    saveButton.addEventListener('click', saveText);
-    loadButton.addEventListener('click', () => fileInput.click());
-    textInput.addEventListener('input', () => {
-        if (saveTimeout) clearTimeout(saveTimeout);
-        saveTimeout = setTimeout(autoSaveText, 1000);
-    });
-    fontSizeInput.addEventListener('input', updateFontSize);
-    clearStorageButton.addEventListener('click', clearLocalStorage);
-    prompter.addEventListener('touchstart', handleTouchStart);
-    prompter.addEventListener('touchmove', handleTouchMove);
-    prompter.addEventListener('touchend', handleTouchEnd);
+    function addEventListeners() {
+        startButton.addEventListener('click', startPrompter);
+        fileInput.addEventListener('change', handleFileUpload);
+        textColorInput.addEventListener('change', updateColors);
+        backgroundColorInput.addEventListener('change', updateColors);
+        saveButton.addEventListener('click', saveText);
+        loadButton.addEventListener('click', () => fileInput.click());
+        textInput.addEventListener('input', () => {
+            if (saveTimeout) clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(autoSaveText, 1000);
+        });
+        fontSizeInput.addEventListener('input', updateFontSize);
+        clearStorageButton.addEventListener('click', clearLocalStorage);
+        prompter.addEventListener('touchstart', handleTouchStart);
+        prompter.addEventListener('touchmove', handleTouchMove);
+        prompter.addEventListener('touchend', handleTouchEnd);
 
-    const savedText = localStorage.getItem('teleprompterText');
-    if (savedText) {
-        textInput.value = savedText;
+        const savedText = localStorage.getItem('teleprompterText');
+        if (savedText) {
+            textInput.value = savedText;
+        }
+    }
+
+    // Check and log missing elements
+    const elements = {
+        editor, prompter, textInput, fileInput, startButton, prompterText,
+        speedIndicator, fontSizeIndicator, textColorInput, backgroundColorInput,
+        saveButton, loadButton, fontSizeInput, clearStorageButton, saveIndicator
+    };
+
+    let allElementsExist = true;
+    for (const [key, element] of Object.entries(elements)) {
+        if (!element) {
+            console.error(`Element ${key} is missing in the DOM`);
+            allElementsExist = false;
+        }
+    }
+
+    if (allElementsExist) {
+        addEventListeners();
+    } else {
+        console.error("One or more elements are missing in the DOM");
     }
 
     function startPrompter() {
