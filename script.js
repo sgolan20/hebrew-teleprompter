@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
         prompter.addEventListener('touchstart', handleTouchStart);
         prompter.addEventListener('touchmove', handleTouchMove);
         prompter.addEventListener('touchend', handleTouchEnd);
-        prompter.addEventListener('click', stopPrompter);
+        
         instructionsButton.addEventListener('click', () => {
             window.location.href = 'instructions-page.html';
         });
@@ -75,41 +75,40 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function startPrompter() {
-        document.getElementById('floatingButton').style.display = 'none';
-        editor.style.display = 'none';
-        prompter.style.display = 'block';
-        prompterText.textContent = textInput.value;
-        fontSize = parseInt(fontSizeInput.value, 10);
-        adjustFontSize(true);
-        window.addEventListener('keydown', handleKeyPress);
-        prompter.addEventListener('click', stopPrompter);
-        scrollSpeed = 1;
-        updateSpeedIndicator();
-        updateColors();
-        updateScrolling();
-        initialPosition = currentPosition;
-        if (window.innerWidth <= 768) {
-            document.documentElement.requestFullscreen();
-        }
+    document.getElementById('floatingButton').style.display = 'none';
+    editor.style.display = 'none';
+    prompter.style.display = 'block';
+    prompterText.textContent = textInput.value;
+    fontSize = parseInt(fontSizeInput.value, 10);
+    adjustFontSize(true);
+    window.addEventListener('keydown', handleKeyPress);
+    prompter.addEventListener('click', stopPrompter);
+    prompter.addEventListener('touchend', handleTouchEnd); // הוסף את זה
+    scrollSpeed = 1;
+    updateSpeedIndicator();
+    updateColors();
+    updateScrolling();
+    initialPosition = currentPosition;
+    if (window.innerWidth <= 768) {
+        document.documentElement.requestFullscreen().catch(err => console.log(err));
     }
+}
 
     function stopPrompter() {
-        document.getElementById('floatingButton').style.display = 'block';
-        editor.style.display = 'flex';
-        prompter.style.display = 'none';
-        scrollSpeed = 1;
-        currentPosition = 0;
-        updateSpeedIndicator();
-        clearInterval(scrollInterval);
-        window.removeEventListener('keydown', handleKeyPress);
-        prompter.removeEventListener('click', stopPrompter);
-        prompter.removeEventListener('touchstart', handleTouchStart);
-        prompter.removeEventListener('touchmove', handleTouchMove);
-        prompter.removeEventListener('touchend', handleTouchEnd);
-        if (document.fullscreenElement) {
-            document.exitFullscreen();
-        }
+    document.getElementById('floatingButton').style.display = 'block';
+    editor.style.display = 'flex';
+    prompter.style.display = 'none';
+    scrollSpeed = 1;
+    currentPosition = 0;
+    updateSpeedIndicator();
+    clearInterval(scrollInterval);
+    window.removeEventListener('keydown', handleKeyPress);
+    prompter.removeEventListener('click', stopPrompter);
+    prompter.removeEventListener('touchend', handleTouchEnd); // הוסף את זה
+    if (document.fullscreenElement) {
+        document.exitFullscreen().catch(err => console.log(err));
     }
+}
 
     function handleKeyPress(e) {
         switch(e.key.toLowerCase()) {
@@ -318,9 +317,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function handleTouchEnd(e) {
-        e.preventDefault();
-        if (e.touches.length < 2) {
-            startY2 = 0;
+    if (e.touches.length < 2) {
+        startY2 = 0;
+        if (e.changedTouches.length === 1) {
+            const endY = e.changedTouches[0].clientY;
+            if (Math.abs(startY - endY) < 10) { // אם היתה תזוזה קטנה מאוד, נחשיב זאת כלחיצה
+                stopPrompter();
+            }
         }
     }
+}
 });
