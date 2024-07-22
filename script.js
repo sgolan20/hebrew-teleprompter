@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const backgroundColorInput = document.getElementById('backgroundColor');
     const saveButton = document.getElementById('saveButton');
     const loadButton = document.getElementById('loadButton');
+    const instructionsButton = document.getElementById('instructionsButton'); // שורה חדשה
     const fontSizeInput = document.getElementById('fontSizeInput');
     const clearStorageButton = document.getElementById('clearStorageButton');
     const saveIndicator = document.getElementById('saveIndicator');
@@ -31,6 +32,10 @@ document.addEventListener('DOMContentLoaded', function() {
         textColorInput.addEventListener('change', updateColors);
         backgroundColorInput.addEventListener('change', updateColors);
         saveButton.addEventListener('click', saveText);
+instructionsButton.addEventListener('click', () => {
+    window.location.href = 'instructions-page.html';
+}); // שורה חדשה
+
         loadButton.addEventListener('click', () => fileInput.click());
         textInput.addEventListener('input', () => {
             if (saveTimeout) clearTimeout(saveTimeout);
