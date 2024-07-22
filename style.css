@@ -193,6 +193,28 @@ input[type="color"], input[type="number"] {
     background-color: #e74c3c;
 }
 
+#exitButton {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgba(231, 76, 60, 0.7);
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+#exitButton:hover {
+    background-color: rgba(231, 76, 60, 1);
+}
+
 @media (max-width: 768px) {
     #editorContent {
         padding: 15px;
