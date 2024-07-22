@@ -20,6 +20,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const saveButton = document.getElementById('saveButton');
     const loadButton = document.getElementById('loadButton');
     const fontSizeInput = document.getElementById('fontSizeInput');
+    const clearStorageButton = document.getElementById('clearStorageButton');
+    const saveIndicator = document.getElementById('saveIndicator');
+
+    let saveTimeout;
 
     startButton.addEventListener('click', startPrompter);
     fileInput.addEventListener('change', handleFileUpload);
@@ -27,8 +31,12 @@ document.addEventListener('DOMContentLoaded', function() {
     backgroundColorInput.addEventListener('change', updateColors);
     saveButton.addEventListener('click', saveText);
     loadButton.addEventListener('click', () => fileInput.click());
-    textInput.addEventListener('input', autoSaveText);
+    textInput.addEventListener('input', () => {
+        if (saveTimeout) clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(autoSaveText, 1000); // שמירה אחרי שנייה של חוסר פעילות
+    });
     fontSizeInput.addEventListener('input', updateFontSize);
+    clearStorageButton.addEventListener('click', clearLocalStorage);
     prompter.addEventListener('touchstart', handleTouchStart);
     prompter.addEventListener('touchmove', handleTouchMove);
     prompter.addEventListener('touchend', handleTouchEnd);
@@ -172,6 +180,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function autoSaveText() {
         localStorage.setItem('teleprompterText', textInput.value);
+        showSaveIndicator();
+    }
+
+    function showSaveIndicator() {
+        saveIndicator.textContent = 'נשמר!';
+        saveIndicator.style.opacity = '1';
+        setTimeout(() => {
+            saveIndicator.style.opacity = '0';
+        }, 2000);
+    }
+
+    function clearLocalStorage() {
+        localStorage.removeItem('teleprompterText');
+        textInput.value = '';
+        showSaveIndicator();
     }
 
     async function handleFileUpload(e) {
