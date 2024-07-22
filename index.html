@@ -168,6 +168,7 @@
             let currentPosition = 0;
             let initialPosition = 0;
             let startY = 0;
+            const sensitivity = 20; // Adjust this value to control the sensitivity
             const editor = document.getElementById('editor');
             const prompter = document.getElementById('prompter');
             const textInput = document.getElementById('textInput');
@@ -392,14 +393,16 @@
                 if (e.touches.length === 1) {
                     const currentY = e.touches[0].clientY;
                     const deltaY = startY - currentY;
-                    startY = currentY;
                     
-                    if (deltaY > 0) {
-                        // Scrolling up - increase speed
-                        scrollSpeed = Math.min(9, scrollSpeed + 1);
-                    } else if (deltaY < 0) {
-                        // Scrolling down - decrease speed
-                        scrollSpeed = Math.max(-9, scrollSpeed - 1);
+                    if (Math.abs(deltaY) > sensitivity) {
+                        if (deltaY > 0) {
+                            // Scrolling up - increase speed
+                            scrollSpeed = Math.min(9, scrollSpeed + 1);
+                        } else if (deltaY < 0) {
+                            // Scrolling down - decrease speed
+                            scrollSpeed = Math.max(-9, scrollSpeed - 1);
+                        }
+                        startY = currentY; // Reset startY to the new currentY for continuous adjustment
                     }
                     
                     updateSpeedIndicator();
