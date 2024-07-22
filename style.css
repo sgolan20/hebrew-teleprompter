@@ -73,6 +73,9 @@ button:hover {
 #startButton {
     background-color: #2ecc71;
 }
+#textSizeControls, #mirrorTextControl {
+    margin-bottom: 20px;
+}
 #colorControls {
     display: flex;
     align-items: center;
@@ -81,7 +84,7 @@ button:hover {
 #colorControls label {
     margin-right: 10px;
 }
-input[type="color"] {
+input[type="color"], input[type="number"] {
     width: 50px;
     height: 50px;
     border: none;
@@ -89,6 +92,7 @@ input[type="color"] {
     cursor: pointer;
     margin-right: 20px;
     background-color: #333;
+    color: #e0e0e0;
 }
 #prompter {
     display: none;
