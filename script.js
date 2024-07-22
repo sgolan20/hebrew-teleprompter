@@ -5,8 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentPosition = 0;
     let initialPosition = 0;
     let startY = 0;
-    let startY2 = 0; // משתנה נוסף לאחסון מיקום האצבע השנייה
-    const sensitivity = 20; // Adjust this value to control the sensitivity
+    let startY2 = 0;
+    const sensitivity = 20;
     const editor = document.getElementById('editor');
     const prompter = document.getElementById('prompter');
     const textInput = document.getElementById('textInput');
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadButton.addEventListener('click', () => fileInput.click());
     textInput.addEventListener('input', () => {
         if (saveTimeout) clearTimeout(saveTimeout);
-        saveTimeout = setTimeout(autoSaveText, 1000); // שמירה אחרי שנייה של חוסר פעילות
+        saveTimeout = setTimeout(autoSaveText, 1000);
     });
     fontSizeInput.addEventListener('input', updateFontSize);
     clearStorageButton.addEventListener('click', clearLocalStorage);
@@ -41,7 +41,6 @@ document.addEventListener('DOMContentLoaded', function() {
     prompter.addEventListener('touchmove', handleTouchMove);
     prompter.addEventListener('touchend', handleTouchEnd);
 
-    // Load saved text on page load
     const savedText = localStorage.getItem('teleprompterText');
     if (savedText) {
         textInput.value = savedText;
@@ -60,10 +59,9 @@ document.addEventListener('DOMContentLoaded', function() {
         updateColors();
         updateScrolling();
         initialPosition = currentPosition;
-            if (window.innerWidth <= 768) {
+        if (window.innerWidth <= 768) {
             document.documentElement.requestFullscreen();
-            }
-    
+        }
     }
 
     function stopPrompter() {
@@ -78,10 +76,9 @@ document.addEventListener('DOMContentLoaded', function() {
         prompter.removeEventListener('touchstart', handleTouchStart);
         prompter.removeEventListener('touchmove', handleTouchMove);
         prompter.removeEventListener('touchend', handleTouchEnd);
-            if (document.fullscreenElement) {
+        if (document.fullscreenElement) {
             document.exitFullscreen();
-            }
-    
+        }
     }
 
     function handleKeyPress(e) {
@@ -128,7 +125,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (scrollSpeed !== 0) {
             scrollInterval = setInterval(() => {
                 currentPosition -= scrollSpeed;
-                // Prevent the text from moving below the initial position
                 currentPosition = Math.min(currentPosition, initialPosition);
                 prompterText.style.transform = `translateY(${currentPosition}px)`;
             }, 16);
@@ -243,11 +239,10 @@ document.addEventListener('DOMContentLoaded', function() {
         return text;
     }
 
-    // Initialize PDF.js
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.worker.min.js';
 
     function handleTouchStart(e) {
-        e.preventDefault(); // Prevent default touch behavior
+        e.preventDefault();
         if (e.touches.length === 1) {
             startY = e.touches[0].clientY;
         } else if (e.touches.length === 2) {
@@ -257,20 +252,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function handleTouchMove(e) {
-        e.preventDefault(); // Prevent default touch behavior
+        e.preventDefault();
         if (e.touches.length === 1) {
             const currentY = e.touches[0].clientY;
             const deltaY = startY - currentY;
 
             if (Math.abs(deltaY) > sensitivity) {
                 if (deltaY > 0) {
-                    // Scrolling up - increase speed
                     scrollSpeed = Math.min(9, scrollSpeed + 1);
                 } else if (deltaY < 0) {
-                    // Scrolling down - decrease speed
                     scrollSpeed = Math.max(-9, scrollSpeed - 1);
                 }
-                startY = currentY; // Reset startY to the new currentY for continuous adjustment
+                startY = currentY;
             }
 
             updateSpeedIndicator();
@@ -283,21 +276,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (Math.abs(deltaY1) > sensitivity && Math.abs(deltaY2) > sensitivity) {
                 if (deltaY1 < 0 && deltaY2 < 0) {
-                    // Both fingers moving down - decrease font size
                     fontSize = Math.max(12, fontSize - 2);
                 } else if (deltaY1 > 0 && deltaY2 > 0) {
-                    // Both fingers moving up - increase font size
                     fontSize = Math.min(96, fontSize + 2);
                 }
-                startY = currentY1; // Reset startY to the new currentY for continuous adjustment
-                startY2 = currentY2; // Reset startY2 to the new currentY2 for continuous adjustment
+                startY = currentY1;
+                startY2 = currentY2;
                 adjustFontSize();
             }
         }
     }
 
     function handleTouchEnd(e) {
-        e.preventDefault(); // Prevent default touch behavior
+        e.preventDefault();
         if (e.touches.length < 2) {
             startY2 = 0;
         }
