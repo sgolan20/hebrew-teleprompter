@@ -19,10 +19,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const backgroundColorInput = document.getElementById('backgroundColor');
     const saveButton = document.getElementById('saveButton');
     const loadButton = document.getElementById('loadButton');
-    const instructionsButton = document.getElementById('instructionsButton'); // שורה חדשה
     const fontSizeInput = document.getElementById('fontSizeInput');
     const clearStorageButton = document.getElementById('clearStorageButton');
     const saveIndicator = document.getElementById('saveIndicator');
+    const instructionsButton = document.getElementById('instructionsButton');
 
     let saveTimeout;
 
@@ -32,10 +32,6 @@ document.addEventListener('DOMContentLoaded', function() {
         textColorInput.addEventListener('change', updateColors);
         backgroundColorInput.addEventListener('change', updateColors);
         saveButton.addEventListener('click', saveText);
-instructionsButton.addEventListener('click', () => {
-    window.location.href = 'instructions-page.html';
-}); // שורה חדשה
-
         loadButton.addEventListener('click', () => fileInput.click());
         textInput.addEventListener('input', () => {
             if (saveTimeout) clearTimeout(saveTimeout);
@@ -46,6 +42,10 @@ instructionsButton.addEventListener('click', () => {
         prompter.addEventListener('touchstart', handleTouchStart);
         prompter.addEventListener('touchmove', handleTouchMove);
         prompter.addEventListener('touchend', handleTouchEnd);
+        prompter.addEventListener('click', stopPrompter);
+        instructionsButton.addEventListener('click', () => {
+            window.location.href = 'instructions-page.html';
+        });
 
         const savedText = localStorage.getItem('teleprompterText');
         if (savedText) {
@@ -57,7 +57,7 @@ instructionsButton.addEventListener('click', () => {
     const elements = {
         editor, prompter, textInput, fileInput, startButton, prompterText,
         speedIndicator, fontSizeIndicator, textColorInput, backgroundColorInput,
-        saveButton, loadButton, fontSizeInput, clearStorageButton, saveIndicator
+        saveButton, loadButton, fontSizeInput, clearStorageButton, saveIndicator, instructionsButton
     };
 
     let allElementsExist = true;
@@ -81,7 +81,7 @@ instructionsButton.addEventListener('click', () => {
         fontSize = parseInt(fontSizeInput.value, 10);
         adjustFontSize(true);
         window.addEventListener('keydown', handleKeyPress);
-        prompter.addEventListener('click', stopPrompter);
+        prompter.addEventListener('click', stopPrompter); // הוספת מאזין ללחיצה על המסך במצב תצוגה
         scrollSpeed = 1;
         updateSpeedIndicator();
         updateColors();
