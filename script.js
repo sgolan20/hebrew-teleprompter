@@ -19,14 +19,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const backgroundColorInput = document.getElementById('backgroundColor');
     const saveButton = document.getElementById('saveButton');
     const loadButton = document.getElementById('loadButton');
+    const fontSizeInput = document.getElementById('fontSizeInput');
+    const mirrorTextCheckbox = document.getElementById('mirrorText');
 
     startButton.addEventListener('click', startPrompter);
     fileInput.addEventListener('change', handleFileUpload);
     textColorInput.addEventListener('change', updateColors);
     backgroundColorInput.addEventListener('change', updateColors);
     saveButton.addEventListener('click', saveText);
-    loadButton.addEventListener('click', loadText);
+    loadButton.addEventListener('click', () => fileInput.click());
     textInput.addEventListener('input', autoSaveText);
+    fontSizeInput.addEventListener('input', updateFontSize);
     prompter.addEventListener('touchstart', handleTouchStart);
     prompter.addEventListener('touchmove', handleTouchMove);
     prompter.addEventListener('touchend', handleTouchEnd);
@@ -41,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
         editor.style.display = 'none';
         prompter.style.display = 'block';
         prompterText.textContent = textInput.value;
+        fontSize = parseInt(fontSizeInput.value, 10);
         adjustFontSize(true);
         window.addEventListener('keydown', handleKeyPress);
         prompter.addEventListener('click', stopPrompter);
@@ -49,6 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateColors();
         updateScrolling();
         initialPosition = currentPosition;
+        updateMirrorText();
     }
 
     function stopPrompter() {
@@ -145,6 +150,11 @@ document.addEventListener('DOMContentLoaded', function() {
         prompter.style.backgroundColor = backgroundColorInput.value;
     }
 
+    function updateFontSize() {
+        fontSize = parseInt(fontSizeInput.value, 10);
+        adjustFontSize();
+    }
+
     function saveText() {
         const text = textInput.value;
         const blob = new Blob([text], {type: "text/plain;charset=utf-8"});
@@ -152,22 +162,6 @@ document.addEventListener('DOMContentLoaded', function() {
         a.href = URL.createObjectURL(blob);
         a.download = "teleprompter_text.txt";
         a.click();
-    }
-
-    function loadText() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.txt';
-        input.onchange = e => {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.onload = readerEvent => {
-                textInput.value = readerEvent.target.result;
-                autoSaveText();
-            }
-            reader.readAsText(file);
-        }
-        input.click();
     }
 
     function autoSaveText() {
@@ -277,6 +271,14 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault(); // Prevent default touch behavior
         if (e.touches.length < 2) {
             startY2 = 0;
+        }
+    }
+
+    function updateMirrorText() {
+        if (mirrorTextCheckbox.checked) {
+            prompterText.style.transform = "scaleX(-1)";
+        } else {
+            prompterText.style.transform = "scaleX(1)";
         }
     }
 });
