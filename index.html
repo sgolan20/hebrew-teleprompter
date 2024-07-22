@@ -19,8 +19,16 @@
             <h1 style="text-align: center; color: #4a90e2;">טלפרומפטר מגניב 😎</h1>
             <textarea id="textInput" dir="rtl" placeholder="הכנס טקסט כאן או טען קובץ"></textarea>
             <div id="fileInput">
-                <button onclick="document.getElementById('fileInputElement').click()">בחר קובץ</button>
+                <button id="loadButton">טען טקסט</button>
                 <input type="file" id="fileInputElement" accept=".txt,.doc,.docx,.ppt,.pdf" style="display: none;">
+            </div>
+            <div id="textSizeControls">
+                <label for="fontSizeInput">גודל טקסט:</label>
+                <input type="number" id="fontSizeInput" value="48" min="12" max="96">
+            </div>
+            <div id="mirrorTextControl">
+                <label for="mirrorText">כתב מראה:</label>
+                <input type="checkbox" id="mirrorText">
             </div>
             <div id="colorControls">
                 <label for="textColor">צבע טקסט:</label>
@@ -30,7 +38,6 @@
             </div>
             <div id="saveLoadControls">
                 <button id="saveButton">שמור טקסט</button>
-                <button id="loadButton">טען טקסט</button>
             </div>
             <button id="startButton">הצג</button>
         </div>
