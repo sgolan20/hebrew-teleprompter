@@ -637,26 +637,6 @@
                         startY2 = currentY2;
                         adjustFontSize();
                     }
-              
-
-                    updateSpeedIndicator();
-                    updateScrolling();
-                } else if (e.touches.length === 2) {
-                    const currentY1 = e.touches[0].clientY;
-                    const currentY2 = e.touches[1].clientY;
-                    const deltaY1 = startY - currentY1;
-                    const deltaY2 = startY2 - currentY2;
-
-                    if (Math.abs(deltaY1) > sensitivity && Math.abs(deltaY2) > sensitivity) {
-                        if (deltaY1 < 0 && deltaY2 < 0) {
-                            fontSize = Math.max(12, fontSize - 2);
-                        } else if (deltaY1 > 0 && deltaY2 > 0) {
-                            fontSize = Math.min(96, fontSize + 2);
-                        }
-                        startY = currentY1;
-                        startY2 = currentY2;
-                        adjustFontSize();
-                    }
                 }
             }
         });
