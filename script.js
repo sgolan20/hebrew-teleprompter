@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const saveButton = document.getElementById('saveButton');
     const loadButton = document.getElementById('loadButton');
     const fontSizeInput = document.getElementById('fontSizeInput');
-    const mirrorTextCheckbox = document.getElementById('mirrorText');
 
     startButton.addEventListener('click', startPrompter);
     fileInput.addEventListener('change', handleFileUpload);
@@ -53,7 +52,10 @@ document.addEventListener('DOMContentLoaded', function() {
         updateColors();
         updateScrolling();
         initialPosition = currentPosition;
-        updateMirrorText();
+            if (window.innerWidth <= 768) {
+            document.documentElement.requestFullscreen();
+            }
+    
     }
 
     function stopPrompter() {
@@ -68,6 +70,10 @@ document.addEventListener('DOMContentLoaded', function() {
         prompter.removeEventListener('touchstart', handleTouchStart);
         prompter.removeEventListener('touchmove', handleTouchMove);
         prompter.removeEventListener('touchend', handleTouchEnd);
+            if (document.fullscreenElement) {
+            document.exitFullscreen();
+            }
+    
     }
 
     function handleKeyPress(e) {
@@ -271,14 +277,6 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault(); // Prevent default touch behavior
         if (e.touches.length < 2) {
             startY2 = 0;
-        }
-    }
-
-    function updateMirrorText() {
-        if (mirrorTextCheckbox.checked) {
-            prompterText.style.transform = "scaleX(-1)";
-        } else {
-            prompterText.style.transform = "scaleX(1)";
         }
     }
 });
